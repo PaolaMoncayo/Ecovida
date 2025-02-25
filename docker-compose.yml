@@ -1,0 +1,111 @@
+version: '3.9'
+
+networks:
+  kong-net:
+    external: true
+
+services:
+  usuarios-service:
+    container_name: usuarios-service
+    image: usuarios-service
+    build:
+      context: ./usuarios-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./usuarios-service:/usr/src/app  # Sincroniza código local con contenedor
+      - /usr/src/app/node_modules        # Evita conflictos con `node_modules`
+    environment:
+      - DB_USER=kong
+      - DB_PASS=kong
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_NAME=kong
+      - JWT_SECRET=supersecreto
+    networks:
+      - kong-net
+
+  catalogo-service:
+    container_name: catalogo-service
+    image: catalogo-service
+    build:
+      context: ./catalogo-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./catalogo-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_USER=kong
+      - DB_PASS=kong
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_NAME=kong
+      - JWT_SECRET=supersecreto
+    networks:
+      - kong-net
+
+  carrito-service:
+    container_name: carrito-service
+    image: carrito-service
+    build:
+      context: ./carrito-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./carrito-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_USER=kong
+      - DB_PASS=kong
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_NAME=kong
+      - JWT_SECRET=supersecreto
+    networks:
+      - kong-net
+
+  pedidos-service:
+    container_name: pedidos-service
+    image: pedidos-service
+    build:
+      context: ./pedidos-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./pedidos-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_USER=kong
+      - DB_PASS=kong
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_NAME=kong
+      - JWT_SECRET=supersecreto
+    networks:
+      - kong-net
+
+  envios-service:
+    container_name: envios-service
+    image: envios-service
+    build:
+      context: ./envios-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./envios-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_USER=kong
+      - DB_PASS=kong
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_NAME=kong
+      - JWT_SECRET=supersecreto
+    networks:
+      - kong-net
