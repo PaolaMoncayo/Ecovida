@@ -4,13 +4,35 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const sanitizeHtml = require('sanitize-html');
+const multer = require('multer');
+const path = require('path');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// Configuración de conexión a PostgreSQL
+// 📌 **Configuración de Multer para subir imágenes**
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Nombre único con la extensión original
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten archivos de imagen'), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+// 📌 **Configurar conexión a PostgreSQL**
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -19,7 +41,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// Middleware para validar JWT
+// 📌 **Middleware para validar JWT**
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
@@ -37,12 +59,15 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-// **Ruta raíz para pruebas**
+// 📌 **Hacer accesibles las imágenes**
+app.use('/uploads', express.static('uploads'));
+
+// 📌 **Ruta raíz para pruebas**
 app.get('/', (req, res) => {
   res.send('API de catálogo está funcionando');
 });
 
-// **Ver productos con filtros**
+// 📌 **Ver productos con filtros**
 app.get('/productos/:id?', async (req, res) => {
   const { id } = req.params;
   const { page = 1, limit = 10, nombre, categoria, precio_min, precio_max } = req.query;
@@ -96,30 +121,23 @@ app.get('/productos/:id?', async (req, res) => {
   }
 });
 
-// **Crear producto** (Incluyendo stock_disponible)
-app.post('/productos', authenticateJWT, async (req, res) => {
+// 📌 **Crear producto con imagen**
+app.post('/productos', authenticateJWT, upload.single('imagen'), async (req, res) => {
   if (req.user.rol !== 'admin') {
     return res.status(403).json({ message: 'Acceso denegado' });
   }
 
   let { nombre, descripcion, precio, categoria, stock_disponible } = req.body;
+  const imagen_url = req.file ? `/uploads/${req.file.filename}` : null;
 
   if (!nombre || !descripcion || !precio || !categoria || stock_disponible === undefined) {
     return res.status(400).json({ message: 'Todos los campos son obligatorios' });
   }
 
-  nombre = sanitizeHtml(validator.escape(nombre));
-  descripcion = sanitizeHtml(validator.escape(descripcion));
-  categoria = sanitizeHtml(validator.escape(categoria));
-
-  if (!validator.isFloat(precio.toString(), { min: 0 }) || !validator.isInt(stock_disponible.toString(), { min: 0 })) {
-    return res.status(400).json({ message: 'El precio y stock deben ser números positivos' });
-  }
-
   try {
     const result = await pool.query(
-      'INSERT INTO productos (nombre, descripcion, precio, categoria, stock_disponible) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [nombre, descripcion, precio, categoria, stock_disponible]
+      'INSERT INTO productos (nombre, descripcion, precio, categoria, stock_disponible, imagen_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [nombre, descripcion, precio, categoria, stock_disponible, imagen_url]
     );
 
     res.status(201).json({ message: 'Producto creado', producto: result.rows[0] });
@@ -129,53 +147,28 @@ app.post('/productos', authenticateJWT, async (req, res) => {
   }
 });
 
-// **Actualizar producto**
-app.put('/productos/:id', authenticateJWT, async (req, res) => {
+// 📌 **Actualizar producto**
+app.put('/productos/:id', authenticateJWT, upload.single('imagen'), async (req, res) => {
   if (req.user.rol !== 'admin') {
     return res.status(403).json({ message: 'Acceso denegado' });
   }
 
   const { id } = req.params;
   let { nombre, descripcion, precio, categoria, stock_disponible } = req.body;
+  const imagen_url = req.file ? `/uploads/${req.file.filename}` : null; 
+
   const updates = [];
   const values = [];
 
-  if (nombre) {
-    updates.push('nombre = $' + (updates.length + 1));
-    values.push(sanitizeHtml(validator.escape(nombre)));
-  }
-  if (descripcion) {
-    updates.push('descripcion = $' + (updates.length + 1));
-    values.push(sanitizeHtml(validator.escape(descripcion)));
-  }
-  if (precio) {
-    if (!validator.isFloat(precio.toString(), { min: 0 })) {
-      return res.status(400).json({ message: 'El precio debe ser positivo' });
-    }
-    updates.push('precio = $' + (updates.length + 1));
-    values.push(precio);
-  }
-  if (categoria) {
-    updates.push('categoria = $' + (updates.length + 1));
-    values.push(sanitizeHtml(validator.escape(categoria)));
-  }
-  if (stock_disponible !== undefined) {
-    if (!validator.isInt(stock_disponible.toString(), { min: 0 })) {
-      return res.status(400).json({ message: 'El stock debe ser un número positivo' });
-    }
-    updates.push('stock_disponible = $' + (updates.length + 1));
-    values.push(stock_disponible);
-  }
+  if (nombre) updates.push(`nombre = $${values.push(nombre)}`);
+  if (descripcion) updates.push(`descripcion = $${values.push(descripcion)}`);
+  if (precio) updates.push(`precio = $${values.push(precio)}`);
+  if (categoria) updates.push(`categoria = $${values.push(categoria)}`);
+  if (stock_disponible !== undefined) updates.push(`stock_disponible = $${values.push(stock_disponible)}`);
+  if (imagen_url) updates.push(`imagen_url = $${values.push(imagen_url)}`);
 
   try {
-    const query = `
-      UPDATE productos
-      SET ${updates.join(', ')}
-      WHERE id_producto = $${updates.length + 1}
-      RETURNING *
-    `;
-    values.push(id);
-
+    const query = `UPDATE productos SET ${updates.join(', ')} WHERE id_producto = $${values.push(id)} RETURNING *`;
     const result = await pool.query(query, values);
 
     if (result.rowCount === 0) {
@@ -189,32 +182,7 @@ app.put('/productos/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-// **Eliminar producto**
-app.delete('/productos/:id', authenticateJWT, async (req, res) => {
-  if (req.user.rol !== 'admin') {
-    return res.status(403).json({ message: 'Acceso denegado' });
-  }
-
-  const { id } = req.params;
-
-  try {
-    const result = await pool.query(
-      'UPDATE productos SET stock_disponible = 0 WHERE id_producto = $1 RETURNING *', 
-      [id]
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
-    }
-
-    res.json({ message: 'Producto marcado como agotado (borrado lógico)', producto: result.rows[0] });
-  } catch (err) {
-    console.error('Error al eliminar producto:', err.message);
-    res.status(500).json({ message: 'Error de base de datos' });
-  }
-});
-
-
+// 📌 **Iniciar servidor**
 app.listen(3001, () => {
   console.log('API de catálogo escuchando en puerto 3001');
 });
