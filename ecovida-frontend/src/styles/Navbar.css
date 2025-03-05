@@ -1,0 +1,91 @@
+/* 🎨 Navbar Mejorada */
+.navbar {
+  background: rgb(167, 132, 139); /* Fondo con transparencia */
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: background 0.3s ease-in-out;
+}
+
+/* 📌 Estilos del Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.logo-image {
+  width: 50px; /* Ajusta el tamaño del logo */
+  height: auto;
+  margin-right: 10px;
+}
+
+.logo:hover {
+  color: #726c81; /* Color dorado al pasar el mouse */
+}
+
+/* 🔗 Enlaces de Navegación */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #726c81;
+}
+
+/* 🎭 Botón de Cerrar Sesión */
+.nav-button {
+  background: white;
+  color: #A7848B;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-button:hover {
+  background: #FFD700;
+  color: #333;
+}
+
+/* 📱 Estilo para móviles */
+@media (max-width: 768px) {
+  .nav-links {
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background: rgba(167, 132, 139, 0.95);
+      padding: 1rem 0;
+      text-align: center;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  }
+}

@@ -4,12 +4,12 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-
+const cors = require('cors'); 
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json()); // Middleware para parsear JSON
-
+app.use(cors());
 // Configuración de la base de datos
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -34,10 +34,10 @@ app.post('/usuarios/registro', async (req, res) => {
 
     // Inserta el usuario en la base de datos
     const result = await pool.query(
-      `INSERT INTO productos (nombre, descripcion, precio, categoria, creado_en) 
-       VALUES ($1, $2, $3, $4, DEFAULT) 
-       RETURNING id_producto AS id, nombre, descripcion, precio, categoria, creado_en`,
-      [nombre, descripcion, precio, categoria]
+      `INSERT INTO usuarios (nombre, email, password, perfil)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id_usuario AS id, nombre, email, perfil, creado_en`,
+      [nombre, email, hashedPassword, perfil || 'usuario']
     );
     
 

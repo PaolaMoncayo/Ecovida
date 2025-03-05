@@ -2,11 +2,13 @@ const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const cors = require('cors'); 
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -40,6 +42,7 @@ app.get('/', (req, res) => {
 });
 
 // **Obtener el carrito del usuario con detalles de productos**
+// Obtener el carrito del usuario con detalles de productos
 app.get('/carrito', authenticateJWT, async (req, res) => {
   try {
     if (req.user.rol !== 'usuario') {
@@ -48,23 +51,21 @@ app.get('/carrito', authenticateJWT, async (req, res) => {
 
     const result = await pool.query(
       `SELECT c.id_usuario, c.id_producto, c.cantidad, 
-              p.nombre, p.precio, p.stock_disponible 
+              p.nombre, p.precio, p.stock_disponible, p.imagen_url 
        FROM carrito c
        JOIN productos p ON c.id_producto = p.id_producto
        WHERE c.id_usuario = $1`,
       [req.user.id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron artículos en el carrito para este usuario' });
-    }
-
-    res.json({ message: 'Carrito obtenido con éxito', carrito: result.rows });
+    // Si no hay artículos, retornar un array vacío con status 200
+    return res.json({ message: 'Carrito obtenido con éxito', carrito: result.rows });
   } catch (error) {
     console.error('Error al obtener el carrito:', error.message);
     res.status(500).json({ message: 'Error al obtener el carrito', error: error.message });
   }
 });
+
 
 // **Agregar productos al carrito con actualización si ya existe**
 app.post('/carrito', authenticateJWT, async (req, res) => {

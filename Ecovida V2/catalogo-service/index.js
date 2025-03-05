@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const sanitizeHtml = require('sanitize-html');
+const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 
@@ -11,7 +12,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-
+app.use(cors());
 // 📌 **Configuración de Multer para subir imágenes**
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -130,23 +131,58 @@ app.post('/productos', authenticateJWT, upload.single('imagen'), async (req, res
   let { nombre, descripcion, precio, categoria, stock_disponible } = req.body;
   const imagen_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!nombre || !descripcion || !precio || !categoria || stock_disponible === undefined) {
-    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+  // ✅ Convertir valores vacíos en `null` para evitar errores en la base de datos
+  nombre = nombre?.trim() || null;
+  descripcion = descripcion?.trim() || null;
+  precio = parseFloat(precio) || null;
+  categoria = categoria?.trim() || null;
+  stock_disponible = parseInt(stock_disponible) || 0;
+
+  // Validar que no haya campos vacíos
+  if (!nombre || !descripcion || !precio || !categoria || stock_disponible === null) {
+    return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
   }
 
   try {
     const result = await pool.query(
-      'INSERT INTO productos (nombre, descripcion, precio, categoria, stock_disponible, imagen_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      `INSERT INTO productos (nombre, descripcion, precio, categoria, stock_disponible, imagen_url) 
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
       [nombre, descripcion, precio, categoria, stock_disponible, imagen_url]
     );
 
-    res.status(201).json({ message: 'Producto creado', producto: result.rows[0] });
+    res.status(201).json({ message: 'Producto creado correctamente', producto: result.rows[0] });
   } catch (err) {
     console.error('Error al crear producto:', err.message);
     res.status(500).json({ message: 'Error de base de datos' });
   }
 });
 
+// 📌 **Eliminar producto**
+app.delete('/productos/:id', authenticateJWT, async (req, res) => {
+  if (req.user.rol !== 'admin') {
+    return res.status(403).json({ message: 'Acceso denegado' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    // Verificar si el producto existe
+    const productCheck = await pool.query('SELECT * FROM productos WHERE id_producto = $1', [id]);
+
+    if (productCheck.rowCount === 0) {
+      return res.status(404).json({ message: 'El producto no existe en la base de datos.' });
+    }
+
+    // Si no tiene pedidos, eliminar el producto
+    await pool.query('DELETE FROM productos WHERE id_producto = $1', [id]);
+
+    res.json({ message: 'Producto eliminado correctamente' });
+  } catch (err) {
+    console.error('Error al eliminar producto:', err.message);
+    res.status(500).json({ message: 'Error en la base de datos' });
+  }
+});
+ 
 // 📌 **Actualizar producto**
 app.put('/productos/:id', authenticateJWT, upload.single('imagen'), async (req, res) => {
   if (req.user.rol !== 'admin') {
@@ -155,7 +191,14 @@ app.put('/productos/:id', authenticateJWT, upload.single('imagen'), async (req, 
 
   const { id } = req.params;
   let { nombre, descripcion, precio, categoria, stock_disponible } = req.body;
-  const imagen_url = req.file ? `/uploads/${req.file.filename}` : null; 
+  const imagen_url = req.file ? `/uploads/${req.file.filename}` : null;
+
+  // ✅ Convertir valores vacíos en `null` para evitar errores en la base de datos
+  nombre = nombre?.trim() || null;
+  descripcion = descripcion?.trim() || null;
+  precio = parseFloat(precio) || null;
+  categoria = categoria?.trim() || null;
+  stock_disponible = parseInt(stock_disponible) || 0;
 
   const updates = [];
   const values = [];
@@ -168,19 +211,24 @@ app.put('/productos/:id', authenticateJWT, upload.single('imagen'), async (req, 
   if (imagen_url) updates.push(`imagen_url = $${values.push(imagen_url)}`);
 
   try {
+    if (updates.length === 0) {
+      return res.status(400).json({ message: "No hay datos para actualizar" });
+    }
+
     const query = `UPDATE productos SET ${updates.join(', ')} WHERE id_producto = $${values.push(id)} RETURNING *`;
     const result = await pool.query(query, values);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
+      return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    res.json({ message: 'Producto actualizado', producto: result.rows[0] });
+    res.json({ message: 'Producto actualizado correctamente', producto: result.rows[0] });
   } catch (err) {
     console.error('Error al actualizar producto:', err.message);
     res.status(500).json({ message: 'Error de base de datos' });
   }
 });
+
 
 // 📌 **Iniciar servidor**
 app.listen(3001, () => {

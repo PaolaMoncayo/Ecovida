@@ -2,12 +2,12 @@ const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-
+const cors = require('cors'); 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-
+app.use(cors());
 // Configuración de conexión a PostgreSQL
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -45,12 +45,12 @@ app.get('/pedidos', verifyToken, async (req, res) => {
       : 'SELECT * FROM pedidos WHERE id_usuario = $1 ORDER BY creado_en DESC';
     const values = isAdmin(req) ? [] : [req.user.id];
     
-    // Obtener pedidos del usuario o de todos los usuarios si es admin
     const pedidosResult = await pool.query(queryPedidos, values);
     const pedidos = pedidosResult.rows;
 
+    // ✅ No retornar error 404 si no hay pedidos, solo devolver []
     if (pedidos.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron pedidos' });
+      return res.json([]); // Devuelve un array vacío con código 200
     }
 
     // Obtener los productos de cada pedido
@@ -72,6 +72,7 @@ app.get('/pedidos', verifyToken, async (req, res) => {
     res.status(500).send({ message: 'Error de base de datos' });
   }
 });
+
 
 
 // **Crear un pedido desde el carrito**

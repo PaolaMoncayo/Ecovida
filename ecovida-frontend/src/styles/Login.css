@@ -1,0 +1,117 @@
+/* 🎨 Fondo con efecto difuminado sin espacios en blanco */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+/* Evita scroll innecesario */
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+
+  background: linear-gradient(135deg, #9ddbca, #92b395);
+  position: relative;
+  overflow: hidden; 
+}
+
+/* 📌 Tarjeta de login con Glassmorphism */
+.login-form {
+  position: relative;
+  background: #d7dcda;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 420px;
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+/* ✨ Título */
+.login-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+/* 📝 Instrucciones */
+.login-instructions {
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 70%;
+  opacity: 0.8;
+}
+
+/* 🏷️ Etiquetas de los campos */
+.login-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+
+/* 🔲 Inputs estilizados */
+.login-input {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(252, 252, 252, 0.3);
+  color: rgb(0, 0, 0);
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-input::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Efecto al enfocar el input */
+.login-input:focus {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 🟢 Botón de login */
+.login-button {
+  background: linear-gradient(135deg, #A7848B, #8B5E75);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-button:hover {
+  background: linear-gradient(135deg, #B88F93, #7D4F64);
+  transform: scale(1.05);
+}
+
+/* 🔴 Mensaje de error */
+.error-message {
+  color: #000000;
+  font-size: 1rem;
+}
+
+/* 📱 Responsividad */
+@media (max-width: 768px) {
+  .login-form {
+    width: 90%;
+  }
+}

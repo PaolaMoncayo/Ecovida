@@ -1,8 +1,16 @@
-version: '3.9'
+version: '3.9' 
 
 networks:
   kong-net:
     external: true
+
+volumes:
+  app-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: D:/Images
+      o: bind
 
 services:
   usuarios-service:
@@ -14,8 +22,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./usuarios-service:/usr/src/app  # Sincroniza código local con contenedor
-      - /usr/src/app/node_modules        # Evita conflictos con `node_modules`
+      - app-data:/usr/src/app/data
+      - ./usuarios-service:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       - DB_USER=kong
       - DB_PASS=kong
@@ -35,6 +44,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
+      - app-data:/usr/src/app/data
       - ./catalogo-service:/usr/src/app
       - /usr/src/app/node_modules
     environment:
@@ -56,6 +66,7 @@ services:
     ports:
       - "3002:3002"
     volumes:
+      - app-data:/usr/src/app/data
       - ./carrito-service:/usr/src/app
       - /usr/src/app/node_modules
     environment:
@@ -77,6 +88,7 @@ services:
     ports:
       - "3003:3003"
     volumes:
+      - app-data:/usr/src/app/data
       - ./pedidos-service:/usr/src/app
       - /usr/src/app/node_modules
     environment:
@@ -98,6 +110,7 @@ services:
     ports:
       - "3004:3004"
     volumes:
+      - app-data:/usr/src/app/data
       - ./envios-service:/usr/src/app
       - /usr/src/app/node_modules
     environment:

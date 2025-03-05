@@ -1,0 +1,154 @@
+/* 🎨 Fondo con efecto difuminado sin espacios en blanco */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin-top: 30px;
+  background: linear-gradient(135deg, #9ddbca, #92b395);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 📌 Tarjeta de registro con Glassmorphism */
+.register-form {
+  position: relative;
+  background: #d7dcda;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 620px;
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+/* ✨ Título */
+.register-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+/* 📝 Instrucciones */
+.register-instructions {
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 70%;
+  opacity: 0.8;
+}
+
+/* 🏷️ Etiquetas */
+.register-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+
+/* 🔲 Inputs */
+.register-input {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(252, 252, 252, 0.3);
+  color: rgb(0, 0, 0);
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.register-input::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.register-input:focus {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 📊 Medidor de seguridad de contraseña */
+/* 📊 Medidor de seguridad de contraseña */
+.password-strength {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: -10px;
+  transition: all 0.3s ease-in-out;
+}
+
+.weak {
+  color: #d32f2f;
+  background: #f8d7da;
+}
+
+.medium {
+  color: #ff9800;
+  background: #ffecb3;
+}
+
+.strong {
+  color: #388e3c;
+  background: #c8e6c9;
+}
+
+/* 🚫 Mensaje de error */
+.error-message {
+  color: red;
+  font-size: 1rem;
+}
+
+/* 🟢 Botón de registro */
+.register-button {
+  background: linear-gradient(135deg, #A7848B, #8B5E75);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.register-button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+.register-button:hover {
+  background: linear-gradient(135deg, #B88F93, #7D4F64);
+  transform: scale(1.05);
+}
+
+/* 🔴 Mensaje de error */
+.error-message {
+  color: #000000;
+  font-size: 1rem;
+}
+
+/* 📱 Responsividad */
+@media (max-width: 768px) {
+  .register-form {
+    width: 90%;
+  }
+}

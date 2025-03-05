@@ -1,0 +1,168 @@
+/* Importar una fuente moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Contenedor principal */
+.product-container {
+    padding: 3rem;
+    max-width: 1800px;
+    margin: auto;
+    text-align: center;
+    background: #92b395;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.title {
+    font-size: 2.5rem;
+    color: #ffffff;
+    font-weight: 700;
+    margin-top: 5rem;
+    margin-bottom: 2rem;
+    padding: 10px;
+    border-bottom: 4px solid #8e44ad;
+    display: inline-block;
+}
+
+/* Estilos para el formulario de búsqueda */
+.search-form {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 2.5rem;
+    padding: 20px;
+    background: #92b395;
+    border-radius: 12px;
+    
+}
+
+.search-input {
+    padding: 12px 18px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    width: 270px;
+    transition: all 0.3s ease-in-out;
+    background: #f9f9f9;
+}
+
+.search-input:focus {
+    border-color: #8e44ad;
+    outline: none;
+    box-shadow: 0px 0px 8px rgba(142, 68, 173, 0.5);
+    background: white;
+}
+
+.search-button {
+    padding: 12px 25px;
+    border: none;
+    background: linear-gradient(135deg, #8e44ad, #732d91);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-button:hover {
+    background: linear-gradient(135deg, #732d91, #5e2879);
+}
+
+/* Contenedor de productos */
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px;
+}
+
+/* Tarjeta del producto */
+.product-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    padding: 20px;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Imagen del producto */
+.product-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+/* Información del producto */
+.product-info {
+    padding: 15px;
+    border-top: 2px solid #eee;
+    background: #fdfdfd;
+    border-radius: 0 0 15px 15px;
+}
+
+.product-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.product-description {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    color: #27ae60;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.product-category {
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 12px;
+}
+
+/* Botón de ver detalle */
+.product-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #3498db, #217dbb);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease-in-out;
+}
+
+.product-link:hover {
+    background: linear-gradient(135deg, #217dbb, #1a5d98);
+}
+
+/* Mensaje cuando no hay productos */
+.no-products {
+    font-size: 1.2rem;
+    color: #888;
+    padding: 20px;
+}

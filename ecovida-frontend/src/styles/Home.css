@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Contenedor principal */
+.home {
+    padding: 50px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+/* 🏠 Hero Section */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px;
+    background: #9ddbca;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-text {
+    text-align: left;
+    max-width: 50%;
+}
+
+.hero-text h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.hero-text .highlight {
+    color: #27ae60;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.hero-image img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 12px;
+}
+
+/* Botón principal */
+.cta-button {
+    background: #27ae60;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: background 0.3s;
+}
+
+.cta-button:hover {
+    background: #219150;
+}
+
+/* 🛍️ Categorías */
+/* 🛍️ Sección de Categorías */
+.categories-section {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.categories-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 120px;
+}
+
+.category-card {
+  background: #d8f5d1;
+  padding: 20px;
+  border-radius: 12px;
+  width: 290px; /* Ajusta el tamaño de las tarjetas */
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+}
+
+.category-card img {
+  width: 100%;  /* Ajusta el tamaño dentro de la tarjeta */
+  max-width: 2000px; /* No permite que crezca más */
+  height: auto;  /* Mantiene la proporción */
+  border-radius: 10px; /* Bordes redondeados */
+  object-fit: cover;  /* Ajusta la imagen sin distorsionarla */
+}
+
+
+/* 📢 Promociones */
+.promo-section {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    background: #92b395;
+    padding: 30px 90px;
+    margin-top: 50px;
+    max-width: 2000px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.promo-section img {
+    width: 100%;  /* Ajusta el tamaño dentro de la tarjeta */
+    max-width: 300px; /* No permite que crezca más */
+    height: auto;  /* Mantiene la proporción */
+    border-radius: 10px; /* Bordes redondeados */
+    object-fit: cover;  /* Ajusta la imagen sin distorsionarla */
+    margin-right: 80px;
+}
+
+.promo-text {
+    text-align: left;
+    max-width: 50%;
+}
+
+/* 💬 Testimonios */
+.testimonials-section {
+    margin-top: 90px;
+    background-color: #d8f5d1;
+    padding: 35px;
+}
+
+.testimonials-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* 📩 Newsletter */
+.newsletter-section {
+    background: #27ae60;
+    color: white;
+    padding: 40px;
+    margin-top: 50px;
+    border-radius: 12px;
+}
+
+.newsletter-form input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 250px;
+}
+
+.newsletter-form button {
+    padding: 10px;
+    background: #f1c40f;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+@media (max-width: 992px) {
+    .hero-section, .promo-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text, .promo-text {
+        max-width: 100%;
+    }
+
+    .categories-container, .testimonials-container {
+        grid-template-columns: 1fr;
+    }
+}
