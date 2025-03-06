@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginUser, getUserProfile } from '../api/userService';
 import { useNavigate } from 'react-router-dom';
+import { sanitizeInput } from '../utils/sanitize';
 import '../styles/Login.css';
 
 function Login() {
@@ -8,6 +9,14 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Manejador para bloquear caracteres prohibidos al teclear
+  const handleKeyDown = (e) => {
+    const forbiddenChars = ['<', '>', '{', '}', '(', ')', ';', "'", '"'];
+    if (forbiddenChars.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +27,11 @@ function Login() {
     localStorage.removeItem('role');
 
     try {
-      const response = await loginUser({ email, password });
+      // Se sanitizan los datos antes de enviarlos
+      const response = await loginUser({
+        email: sanitizeInput(email),
+        password: sanitizeInput(password)
+      });
       const token = response.data.token;
 
       if (token) {
@@ -51,8 +64,10 @@ function Login() {
           className="login-input"
           placeholder="Ejemplo: usuario@correo.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(sanitizeInput(e.target.value))}
+          onKeyDown={handleKeyDown}
           required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
         />
         
         <label className="login-label">Contraseña</label>
@@ -61,7 +76,8 @@ function Login() {
           className="login-input"
           placeholder="Ingresa tu contraseña"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(sanitizeInput(e.target.value))}
+          onKeyDown={handleKeyDown}
           required
         />
 

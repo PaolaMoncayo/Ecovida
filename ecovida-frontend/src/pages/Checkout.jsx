@@ -3,6 +3,7 @@ import { createOrder } from '../api/ordersService';
 import { getCart } from '../api/cartService';
 import { getUserProfile } from '../api/userService';
 import { useNavigate } from 'react-router-dom';
+import { sanitizeInput } from '../utils/sanitize';
 import '../styles/Checkout.css';
 
 function Checkout() {
@@ -48,6 +49,14 @@ function Checkout() {
     (total, item) => total + item.precio * item.cantidad,
     0
   );
+
+  // Manejador para bloquear caracteres prohibidos al teclear
+  const handleKeyDown = (e) => {
+    const forbiddenChars = ['<', '>', '{', '}', '(', ')', ';', "'", '"'];
+    if (forbiddenChars.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
 
   const handleCreateOrder = async (e) => {
     e.preventDefault();
@@ -109,9 +118,10 @@ function Checkout() {
               id="direccion"
               type="text"
               value={direccion}
-              onChange={(e) => setDireccion(e.target.value)}
-              required
               placeholder="Ingresa tu dirección"
+              required
+              onChange={(e) => setDireccion(sanitizeInput(e.target.value))}
+              onKeyDown={handleKeyDown}
             />
           </div>
           <button type="submit" disabled={isLoading || !direccion.trim()}>

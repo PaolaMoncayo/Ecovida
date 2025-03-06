@@ -4,6 +4,7 @@ import { getOrders, updateOrder, deleteOrder } from '../api/ordersService';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productsService';
 import { getAllShipments, updateShipmentStatus } from '../api/shippingService';
 import { useNavigate } from 'react-router-dom';
+import { sanitizeInput } from '../utils/sanitize'; // Importa la función de sanitización
 import '../styles/AdminDashboard.css';
 
 function AdminDashboard() {
@@ -21,7 +22,7 @@ function AdminDashboard() {
     precio: '',
     categoria: '',
     stock_disponible: '',
-    imagen: null
+    imagen: null,
   });
 
   useEffect(() => {
@@ -40,7 +41,7 @@ function AdminDashboard() {
         getProducts(token),
         getAllShipments(token),
       ]);
-  
+
       setUsers(resUsers.data);
       setOrders(resOrders.data);
       setProducts(resProducts.data);
@@ -51,23 +52,32 @@ function AdminDashboard() {
     }
   };
 
+  // Manejador para bloquear caracteres maliciosos al teclear
+  const handleKeyDown = (e) => {
+    const forbiddenChars = ['<', '>', '{', '}', '(', ')', ';', "'", '"'];
+    if (forbiddenChars.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   const handleChange = (e) => {
     if (e.target.name === 'imagen') {
       if (e.target.files.length > 0) {
         setFormData({ ...formData, imagen: e.target.files[0] });
       }
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      // Para todos los demás campos, sanitizamos la entrada
+      setFormData({ ...formData, [e.target.name]: sanitizeInput(e.target.value) });
     }
   };
-  
+
   const handleSaveProduct = async () => {
     if (!formData.nombre || !formData.descripcion || !formData.precio || 
         !formData.categoria || !formData.stock_disponible || !formData.imagen) {
       alert("Todos los campos son obligatorios.");
       return;
     }
-  
+
     try {
       const productFormData = new FormData();
       productFormData.append('nombre', formData.nombre);
@@ -75,11 +85,11 @@ function AdminDashboard() {
       productFormData.append('precio', formData.precio);
       productFormData.append('categoria', formData.categoria);
       productFormData.append('stock_disponible', formData.stock_disponible);
-  
+
       if (formData.imagen instanceof File) {
         productFormData.append('imagen', formData.imagen);
       }
-  
+
       if (selectedProduct) {
         await updateProduct(token, selectedProduct.id_producto, productFormData);
         alert('Producto actualizado correctamente');
@@ -87,14 +97,14 @@ function AdminDashboard() {
         await createProduct(token, productFormData);
         alert('Producto creado correctamente');
       }
-  
+
       fetchData();
       setModalOpen(false);
     } catch (err) {
       alert(`Error al guardar producto: ${err.response?.data?.message || 'Error desconocido'}`);
     }
   };
-  
+
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setFormData({
@@ -103,7 +113,7 @@ function AdminDashboard() {
       precio: product.precio,
       categoria: product.categoria,
       stock_disponible: product.stock_disponible,
-      imagen: null
+      imagen: null,
     });
     setModalOpen(true);
   };
@@ -112,7 +122,7 @@ function AdminDashboard() {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
       return;
     }
-  
+
     try {
       await deleteProduct(token, id);
       alert('Producto eliminado correctamente');
@@ -255,14 +265,59 @@ function AdminDashboard() {
         <div className="modal">
           <div className="modal-content">
             <h3>{selectedProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
-            <input type="text" name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} required />
-            <input type="text" name="descripcion" placeholder="Descripción" value={formData.descripcion} onChange={handleChange} required />
-            <input type="number" name="precio" placeholder="Precio" value={formData.precio} onChange={handleChange} required />
-            <input type="text" name="categoria" placeholder="Categoría" value={formData.categoria} onChange={handleChange} required />
-            <input type="number" name="stock_disponible" placeholder="Stock" value={formData.stock_disponible} onChange={handleChange} required />
-            <input type="file" name="imagen" onChange={handleChange} required />
+            <input 
+              type="text" 
+              name="nombre" 
+              placeholder="Nombre" 
+              value={formData.nombre} 
+              onChange={handleChange} 
+              onKeyDown={handleKeyDown}
+              required 
+            />
+            <input 
+              type="text" 
+              name="descripcion" 
+              placeholder="Descripción" 
+              value={formData.descripcion} 
+              onChange={handleChange} 
+              onKeyDown={handleKeyDown}
+              required 
+            />
+            <input 
+              type="number" 
+              name="precio" 
+              placeholder="Precio" 
+              value={formData.precio} 
+              onChange={handleChange} 
+              required 
+            />
+            <input 
+              type="text" 
+              name="categoria" 
+              placeholder="Categoría" 
+              value={formData.categoria} 
+              onChange={handleChange} 
+              onKeyDown={handleKeyDown}
+              required 
+            />
+            <input 
+              type="number" 
+              name="stock_disponible" 
+              placeholder="Stock" 
+              value={formData.stock_disponible} 
+              onChange={handleChange} 
+              required 
+            />
+            <input 
+              type="file" 
+              name="imagen" 
+              onChange={handleChange} 
+              required 
+            />
             <div className="modal-buttons">
-              <button onClick={handleSaveProduct}>{selectedProduct ? 'Actualizar' : 'Crear'}</button>
+              <button onClick={handleSaveProduct}>
+                {selectedProduct ? 'Actualizar' : 'Crear'}
+              </button>
               <button onClick={() => setModalOpen(false)}>Cancelar</button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts } from '../api/productsService';
 import { Link } from 'react-router-dom';
+import { sanitizeInput } from '../utils/sanitize';
 import '../styles/ProductList.css';
 
 function ProductList() {
@@ -12,7 +13,7 @@ function ProductList() {
 
   const fetchData = async () => {
     try {
-      const response = await getProducts(filters);
+      const response = await getProducts('', filters);
       setProducts(response.data);
     } catch (error) {
       console.error('Error al obtener productos:', error);
@@ -29,6 +30,14 @@ function ProductList() {
     fetchData();
   };
 
+  // Manejador para bloquear caracteres prohibidos al teclear
+  const handleKeyDown = (e) => {
+    const forbiddenChars = ['<', '>', '{', '}', '(', ')', ';', "'", '"'];
+    if (forbiddenChars.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="product-container">
       <h2 className="title">Catálogo de Productos</h2>
@@ -38,14 +47,20 @@ function ProductList() {
           type="text"
           placeholder="Buscar por nombre..."
           value={filters.nombre}
-          onChange={(e) => setFilters({ ...filters, nombre: e.target.value })}
+          onChange={(e) =>
+            setFilters({ ...filters, nombre: sanitizeInput(e.target.value) })
+          }
+          onKeyDown={handleKeyDown}
           className="search-input"
         />
         <input
           type="text"
           placeholder="Categoría..."
           value={filters.categoria}
-          onChange={(e) => setFilters({ ...filters, categoria: e.target.value })}
+          onChange={(e) =>
+            setFilters({ ...filters, categoria: sanitizeInput(e.target.value) })
+          }
+          onKeyDown={handleKeyDown}
           className="search-input"
         />
         <button type="submit" className="search-button">Buscar</button>

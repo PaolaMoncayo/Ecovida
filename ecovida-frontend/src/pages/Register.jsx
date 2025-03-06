@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { registerUser } from '../api/userService';
 import { useNavigate } from 'react-router-dom';
+import { sanitizeInput } from '../utils/sanitize';
 import '../styles/Register.css';
 
 function Register() {
@@ -16,15 +17,24 @@ function Register() {
   const [passwordStrength, setPasswordStrength] = useState({ label: 'Débil', color: 'weak' });
   const [passwordMatchError, setPasswordMatchError] = useState('');
 
+  // Manejador para bloquear caracteres prohibidos al teclear
+  const handleKeyDown = (e) => {
+    const forbiddenChars = ['<', '>', '{', '}', '(', ')', ';', "'", '"'];
+    if (forbiddenChars.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value = sanitizeInput(e.target.value);
+    setForm({ ...form, [e.target.name]: value });
 
     if (e.target.name === 'password') {
-      evaluatePasswordStrength(e.target.value);
+      evaluatePasswordStrength(value);
     }
 
     if (e.target.name === 'confirmPassword') {
-      validatePasswordMatch(e.target.value, form.password);
+      validatePasswordMatch(value, form.password);
     }
   };
 
@@ -86,6 +96,7 @@ function Register() {
           name="nombre"
           value={form.nombre}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           required
         />
 
@@ -97,7 +108,9 @@ function Register() {
           name="email"
           value={form.email}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
         />
 
         <label className="register-label">Contraseña</label>
@@ -108,10 +121,10 @@ function Register() {
           name="password"
           value={form.password}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           required
         />
 
-        {/* 📊 Indicador de seguridad de contraseña */}
         <div className={`password-strength ${passwordStrength.color}`}>
           {passwordStrength.label}
         </div>
@@ -124,6 +137,7 @@ function Register() {
           name="confirmPassword"
           value={form.confirmPassword}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           required
         />
 
