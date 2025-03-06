@@ -32,7 +32,7 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Imagen del producto */
+/* Contenedor de la imagen */
 .product-image-container {
     display: flex;
     align-items: center;
@@ -41,12 +41,21 @@
     background: white;
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Evita que la imagen se desborde al hacer hover */
 }
 
+/* Imagen del producto */
 .product-image {
     width: 100%;
-    max-width: 250px;
+    max-width: 250px;  /* Se aumenta el tamaño máximo para una mejor visibilidad */
     border-radius: 10px;
+    object-fit: cover; /* Asegura que la imagen mantenga sus proporciones sin distorsionarse */
+    transition: transform 0.3s ease; /* Transición suave para el efecto hover */
+}
+
+/* Efecto hover: sutil zoom */
+.product-image:hover {
+    transform: scale(1.05);
 }
 
 /* Información del producto */

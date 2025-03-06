@@ -37,7 +37,7 @@
   /* Tarjeta de producto en el carrito */
   .cart-item {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     background: white;
     padding: 1rem;
     border-radius: 10px;
@@ -47,8 +47,8 @@
   
   /* Imagen del producto */
   .cart-item-image img {
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     object-fit: cover;
     border-radius: 10px;
   }
@@ -156,11 +156,15 @@
   
   /* Mensaje de carrito vacío */
   .cart-empty {
-    text-align: center;
-    padding: 2rem;
-    font-size: 1.2rem;
-    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    background-color: #f1f1f1; /* Fondo para resaltar el mensaje */
+    font-size: 1.5rem;
+    color: #666;
   }
+  
   
   /* Responsive: Ajuste para pantallas pequeñas */
   @media (max-width: 768px) {

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getOrders } from '../api/ordersService';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Orders.css';
 
 function Orders() {
   const navigate = useNavigate();
@@ -30,29 +31,43 @@ function Orders() {
   }, [token, navigate]);
 
   if (!orders.length) {
-    return <div style={{ padding: '1rem' }}>No tienes pedidos registrados.</div>;
+    return (
+      <div className="orders-empty">
+        <h2>No tienes pedidos registrados.</h2>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h2>Mis Pedidos</h2>
-      {orders.map((o) => (
-        <div key={o.id_pedido} style={{ border: '1px solid #ccc', marginBottom: '1rem', padding: '0.5rem' }}>
-          <h4>Pedido #{o.id_pedido}</h4>
-          <p>Estado: {o.estado}</p>
-          <p>Total: ${o.total}</p>
-          <p>Dirección: {o.direccion_entrega}</p>
-          <p>Creado en: {o.creado_en}</p>
-          <p>Productos:</p>
-          <ul>
-            {o.productos?.map((prod) => (
-              <li key={prod.id_producto}>
-                {prod.nombre} - Cant: {prod.cantidad} (Precio Unit.: {prod.precio_unitario})
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="orders-container">
+      <h2 className="orders-title">Mis Pedidos</h2>
+      <div className="orders-list">
+        {orders.map((o) => (
+          <div key={o.id_pedido} className="order-card">
+            <h3 className="order-number">Pedido #{o.id_pedido}</h3>
+            <p className="order-status">Estado: {o.estado}</p>
+            <p className="order-total">Total: ${o.total}</p>
+            <p className="order-address">Dirección: {o.direccion_entrega}</p>
+            <p className="order-date">Creado en: {o.creado_en}</p>
+
+            <div className="order-products">
+              <h4>Productos:</h4>
+              <ul>
+                {o.productos?.map((prod) => (
+                  <li key={prod.id_producto} className="order-product-item">
+                
+                    <div className="order-product-details">
+                      <span className="order-product-title">{prod.nombre}</span>
+                      <span className="order-product-qty">Cant: {prod.cantidad}</span>
+                      <span className="order-product-unit-price">Precio Unit.: ${prod.precio_unitario}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
