@@ -87,6 +87,8 @@ SELECT * FROM productos;
 SELECT * FROM pedidos;
 SELECT * FROM detalle_pedido;
 SELECT * FROM envios;
+SELECT * FROM test_kong;
+
 
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS pedidos;
@@ -141,5 +143,8 @@ VALUES
 (3, 'Entregado', 'Calle Secundaria 789, Guayaquil', '2024-12-05 10:00:00'), 
 (4, 'Cancelado', 'Av. Interoceánica 111, Cuenca', '2024-12-07 15:00:00'); 
 
+USE DATABASE kong;
+CREATE DATABASE test_kong;
+SELECT datname FROM pg_database;
 
 
